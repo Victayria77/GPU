@@ -21,6 +21,9 @@ import numpy as np
 
 data = [str(i) for i in np.random.randint(0, 1e8, size=[100])] # input
 data = sorted(data, key=lambda x:len(x), reverse=True)
+
+target = [i + '0' for i in data]
+
 # print(data)
 input_len = torch.LongTensor([len(i) for i in data]).to(config.device)
 input = torch.LongTensor([config.num_seq.transform(list(sentence), config.max_len) for sentence in data]).to(config.device)
@@ -32,10 +35,10 @@ seq2seq.load_state_dict(torch.load(config.model_save_path))
 
 # 3. 获取预测值
 indices = seq2seq.eval(input, input_len)
-indices = np.asarray([i.cpu().detach().numpy() for i in indices])
+# indices = np.asarray([i.cpu().detach().numpy() for i in indices])
 # # print(indices)
-indices = indices.transpose()
-# indices = np.array(indices).transpose()
+# indices = indices.transpose()
+indices = np.array(indices).transpose()
 # print(indices)
 # 4. 反序列化，观察结果
 # res = [config.num_seq.inverse_transform(i) for i in indices]
@@ -50,3 +53,6 @@ for line in indices:
     res.append(cur_line)
 print(data[:10])
 print(res[:10])
+
+print(target[:10])
+print(sum([ i==j for i,j in zip(target, res)]) / len(target))

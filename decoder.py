@@ -85,14 +85,14 @@ class Decoder(nn.Module):
         indices = []
         
         # while True:
-        for i in range(config.max_len + 2):
+        for i in range(config.max_len):
             decoder_output_t, decoder_hidden = self.forward_step(decoder_input, decoder_hidden)
             value, index = torch.topk(decoder_output_t, 1)
             decoder_input = index
             # if index == config.num_seq.EOS:
             #     break
             # indices.append(index.item())
-            indices.append(index.squeeze(-1))
+            indices.append(index.squeeze(-1).cpu().detach().numpy())
         # print(indices)
         
         return indices
